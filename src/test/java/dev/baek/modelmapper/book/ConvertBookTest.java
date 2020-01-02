@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 
 import java.util.Date;
 
@@ -70,6 +71,43 @@ public class ConvertBookTest {
 		Assert.assertEquals(bookVO.getAuthor(), bookDTO.getAuthor());
 		Assert.assertEquals(bookVO.getSubTitle(), bookDTO.getSubTitle());
 		Assert.assertEquals(bookVO.getCurrencyType(), bookDTO.getCurrencyType());
+	}
+
+	@Test
+	public void test_not_mapping_createdAt_by_publishedAt() {
+		ModelMapper modelMapper = new ModelMapper();
+		BookVO bookVO = modelMapper.map(bookDTO, BookVO.class);
+		Assert.assertNotEquals(bookVO.getCreateAt(), bookDTO.getPublishedAt());
+	}
+
+	@Test
+	public void test_add_mappings() {
+		PropertyMap<BookDTO, BookVO> bookMap = new PropertyMap<BookDTO, BookVO>() {
+			protected void configure() {
+				map().setCreateAt(source.getPublishedAt());
+			}
+		};
+
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.addMappings(bookMap);
+		BookVO bookVO = modelMapper.map(bookDTO, BookVO.class);
+
+		Assert.assertEquals(bookVO.getCreateAt(), bookDTO.getPublishedAt());
+	}
+
+	@Test
+	public void test_validate() {
+		ModelMapper modelMapper = new ModelMapper();
+
+		PropertyMap<BookDTO, BookVO> bookMap = new PropertyMap<BookDTO, BookVO>() {
+			protected void configure() {
+				map().setCreateAt(source.getPublishedAt());
+			}
+		};
+		modelMapper.addMappings(bookMap);
+
+		modelMapper.map(bookDTO, BookVO.class);
+		modelMapper.validate();
 	}
 
 }
