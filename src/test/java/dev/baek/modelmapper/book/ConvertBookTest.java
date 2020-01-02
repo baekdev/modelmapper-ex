@@ -2,10 +2,12 @@ package dev.baek.modelmapper.book;
 
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.modelmapper.ModelMapper;
 
 import java.util.Date;
 
@@ -57,6 +59,17 @@ public class ConvertBookTest {
 		bookVO.setCreateAt(bookDTO.getPublishedAt());
 
 		Assertions.assertThat(bookDTO.getSubTitle()).isNotEqualTo(bookVO.getSubTitle());
+	}
+
+	@Test
+	public void test_use_model_mapper() {
+		ModelMapper modelMapper = new ModelMapper();
+		BookVO bookVO = modelMapper.map(bookDTO, BookVO.class);
+
+		Assert.assertEquals(bookVO.getTitle(), bookDTO.getTitle());
+		Assert.assertEquals(bookVO.getAuthor(), bookDTO.getAuthor());
+		Assert.assertEquals(bookVO.getSubTitle(), bookDTO.getSubTitle());
+		Assert.assertEquals(bookVO.getCurrencyType(), bookDTO.getCurrencyType());
 	}
 
 }
